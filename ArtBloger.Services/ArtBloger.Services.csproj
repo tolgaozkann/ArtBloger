@@ -16,4 +16,10 @@
     <PackageReference Include="System.Diagnostics.Tools" Version="4.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ArtBloger.Data\ArtBloger.Data.csproj" />
+    <ProjectReference Include="..\ArtBloger.Entities\ArtBloger.Entities.csproj" />
+    <ProjectReference Include="..\ArtBloger.Shared\ArtBloger.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
