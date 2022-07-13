@@ -25,16 +25,25 @@ namespace ArtBloger.Services.Concrete
             _mapper = mapper;
         }
 
-        public async Task<IResult> Add(CategoryAddDto categoryAddDto)
+        public async Task<IDataResult<CategoryDto>> Add(CategoryAddDto categoryAddDto)
         {
             var category = _mapper.Map<Category>(categoryAddDto);
             if (category != null)
             {
-                await _unitOfWork.Categories.AddAsync(category).ContinueWith(t => _unitOfWork.SaveAsync());//task bitmeden diğerini yapar hız sağlar.
-                
-                return new Result(ResultStatus.Success, $"Category :{category.Name} added successfully");
+                var data = await _unitOfWork.Categories.AddAsync(category);
+                await _unitOfWork.SaveAsync();
+                return new DataResult<CategoryDto>(new CategoryDto
+                {
+                    Name = data.Name,
+                    ResultStatus = ResultStatus.Success,
+                    Id = data.Id
+                },ResultStatus.Success, $"Category :{category.Name} added successfully");
             }
-            return new Result(ResultStatus.Error, "Category not added");
+            return new DataResult<CategoryDto>(new CategoryDto
+            {
+                ResultStatus = ResultStatus.Error,
+                Message = $"Category :{category.Name} not added",
+            }, ResultStatus.Error, "Category not added");
         }
         
         public async Task<IResult> Delete(int id)
@@ -60,7 +69,11 @@ namespace ArtBloger.Services.Concrete
                     Id = data.Id
                 }, ResultStatus.Success);
             }
-            return new DataResult<CategoryDto>(null,ResultStatus.Error, "no such category found");
+            return new DataResult<CategoryDto>(new CategoryDto
+            {
+                Message = "Category not found",
+                ResultStatus = ResultStatus.Error,
+            },ResultStatus.Error, "no such category found");
         }
 
         public async Task<IDataResult<CategoryListDto>> GetAll()
@@ -75,20 +88,35 @@ namespace ArtBloger.Services.Concrete
                     ResultStatus = ResultStatus.Success
                 }, ResultStatus.Success);
             }
-            return new DataResult<CategoryListDto>(null, ResultStatus.Error, "There is no category"); 
+            return new DataResult<CategoryListDto>(new CategoryListDto
+            {
+                ResultStatus = ResultStatus.Error,
+                Message = "no categories found",
+                Categories = null
+            }, ResultStatus.Error, "There is no category"); 
         }
 
 
-        public async Task<IResult> Update(CategoryUpdateDto categoryUpdateDto)
+        public async Task<IDataResult<CategoryDto>> Update(CategoryUpdateDto categoryUpdateDto)
         {
             var category = await _unitOfWork.Categories.GetAsync(c => c.Id == categoryUpdateDto.Id);
             if (category != null)
             {
                 category = _mapper.Map<Category>(categoryUpdateDto);
-                await _unitOfWork.Categories.UpdateAsync(category).ContinueWith(t => _unitOfWork.SaveAsync());
-                return new Result(ResultStatus.Success, $"Category :{category.Name} updated successfully");
+                var data = await _unitOfWork.Categories.UpdateAsync(category);
+                await _unitOfWork.SaveAsync();
+                return new DataResult<CategoryDto>(new CategoryDto
+                {
+                    Name = data.Name,
+                    ResultStatus = ResultStatus.Success,
+                    Id = data.Id
+                }, ResultStatus.Success, $"Category :{category.Name} updated successfully");
             }
-            return new Result(ResultStatus.Error, "Category not updated");
+            return new DataResult<CategoryDto>(new CategoryDto
+            {
+                ResultStatus = ResultStatus.Error,
+                Message = $"Category :{category.Name} not updated",
+            }, ResultStatus.Error, "Category not updated");
         }
     }
 }

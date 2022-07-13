@@ -2,6 +2,7 @@ using ArtBloger.Data.Abstract;
 using ArtBloger.Data.Concrete;
 using ArtBloger.Data.Concrete.EntityFramework.Contexts;
 using ArtBloger.Services.Abstract;
+using ArtBloger.Services.AutoMapper.Profiles;
 using ArtBloger.Services.Concrete;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,8 +19,8 @@ builder.Services.AddScoped<ICategoryService,CategoryManager>();
 builder.Services.AddScoped<IArticleService,ArticleManager>();
 
 // Add services to the container.
-builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation(); 
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile));
 
 var app = builder.Build();
 
