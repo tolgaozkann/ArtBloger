@@ -10,25 +10,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace ArtBloger.Services.Concrete
 {
     public class CategoryManager : ICategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public CategoryManager(IUnitOfWork unitOfWork)
+        public CategoryManager(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<IResult> Add(CategoryAddDto categoryAddDto)
         {
-            var category = new Category
-            {
-                Name = categoryAddDto.Name
-            };
-            if(category != null)
+            var category = _mapper.Map<Category>(categoryAddDto);
+            if (category != null)
             {
                 await _unitOfWork.Categories.AddAsync(category).ContinueWith(t => _unitOfWork.SaveAsync());//task bitmeden diğerini yapar hız sağlar.
                 
@@ -48,24 +48,26 @@ namespace ArtBloger.Services.Concrete
             return new Result(ResultStatus.Error, "Category not deleted");
         }
         
-        public async Task<IDataResult<Category>> Get(int id)
+        public async Task<IDataResult<CategoryDto>> Get(int id)
         {
            var data = await _unitOfWork.Categories.GetAsync(c => c.Id == id, c=> c.Articles);
+            var category = _mapper.Map<CategoryDto>(data);
             if (data != null)
             {
-                return new DataResult<Category>(data,ResultStatus.Success);
+                return new DataResult<CategoryDto>(category, ResultStatus.Success);
             }
-            return new DataResult<Category>(null,ResultStatus.Error, "no such category found");
+            return new DataResult<CategoryDto>(null,ResultStatus.Error, "no such category found");
         }
 
-        public async Task<IDataResult<IList<Category>>> GetAll()
+        public async Task<IDataResult<CategoryListDto>> GetAll()
         {
             var data = await _unitOfWork.Categories.GetAllAsync(null,c=>c.Articles);
-            if(data.Count > -1)
+            var categories = _mapper.Map<CategoryListDto>(data);
+            if (data.Count > -1)
             {
-                return new DataResult<IList<Category>>(data, ResultStatus.Success);
+                return new DataResult<CategoryListDto>(categories, ResultStatus.Success);
             }
-            return new DataResult<IList<Category>>(null, ResultStatus.Error, "There is no category"); 
+            return new DataResult<CategoryListDto>(null, ResultStatus.Error, "There is no category"); 
         }
 
 

@@ -18,8 +18,8 @@ namespace ArtBloger.Entities.Concrete
         public string Content { get; set; }
         public string Image { get; set; }
         public DateTime CreatedTime { get; set; } = DateTime.Now;
-        public int ViewsCount { get; set; }
-        public int CommentCount { get; set; }
+        public int ViewsCount { get; set; } = 0;
+        public int CommentCount { get; set; } = 0;
         public string SeoDescription { get; set; }
         public string SeoAuthor { get; set; }
         public string SeoTags { get; set; }

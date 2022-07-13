@@ -13,7 +13,7 @@ namespace ArtBloger.Services.Abstract
     {
         Task<IDataResult<ArticleDto>> Get(int id);
         Task<IDataResult<ArticleListDto>> GetAll();
-        Task<IDataResult<ArticleListDto>> GetAllByCategory();
+        Task<IDataResult<ArticleListDto>> GetAllByCategory(int id);
         Task<IResult> Add(ArticleAddDto articleAddDto);
         Task<IResult> Update(ArticleUpdateDto articleUpdateDto);
         Task<IResult> Delete(int id);
