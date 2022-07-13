@@ -51,10 +51,14 @@ namespace ArtBloger.Services.Concrete
         public async Task<IDataResult<CategoryDto>> Get(int id)
         {
            var data = await _unitOfWork.Categories.GetAsync(c => c.Id == id, c=> c.Articles);
-            var category = _mapper.Map<CategoryDto>(data);
             if (data != null)
             {
-                return new DataResult<CategoryDto>(category, ResultStatus.Success);
+                return new DataResult<CategoryDto>(new CategoryDto
+                {
+                    Name = data.Name,
+                    ResultStatus = ResultStatus.Success,
+                    Id = data.Id
+                }, ResultStatus.Success);
             }
             return new DataResult<CategoryDto>(null,ResultStatus.Error, "no such category found");
         }
@@ -62,10 +66,14 @@ namespace ArtBloger.Services.Concrete
         public async Task<IDataResult<CategoryListDto>> GetAll()
         {
             var data = await _unitOfWork.Categories.GetAllAsync(null,c=>c.Articles);
-            var categories = _mapper.Map<CategoryListDto>(data);
+            //var categories = _mapper.Map<CategoryListDto>(data);
             if (data.Count > -1)
             {
-                return new DataResult<CategoryListDto>(categories, ResultStatus.Success);
+                return new DataResult<CategoryListDto>(new CategoryListDto
+                {
+                    Categories = data,
+                    ResultStatus = ResultStatus.Success
+                }, ResultStatus.Success);
             }
             return new DataResult<CategoryListDto>(null, ResultStatus.Error, "There is no category"); 
         }
@@ -76,7 +84,7 @@ namespace ArtBloger.Services.Concrete
             var category = await _unitOfWork.Categories.GetAsync(c => c.Id == categoryUpdateDto.Id);
             if (category != null)
             {
-                category.Name = categoryUpdateDto.Name;
+                category = _mapper.Map<Category>(categoryUpdateDto);
                 await _unitOfWork.Categories.UpdateAsync(category).ContinueWith(t => _unitOfWork.SaveAsync());
                 return new Result(ResultStatus.Success, $"Category :{category.Name} updated successfully");
             }
