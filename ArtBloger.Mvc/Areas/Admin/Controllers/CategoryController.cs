@@ -58,6 +58,7 @@ namespace ArtBloger.Mvc.Areas.Admin.Controllers
                 CategoryAddPartial = await this.RenderViewToStringAsync("_CategoryAddPartial", categoryAddDto)
             });
             return Json(categoryAddAjaxErrorModel);
+            
         }
     }
 }

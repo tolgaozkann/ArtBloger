@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using ArtBloger.Data.Abstract;
 using ArtBloger.Data.Concrete;
 using ArtBloger.Data.Concrete.EntityFramework.Contexts;
@@ -19,7 +21,9 @@ builder.Services.AddScoped<ICategoryService,CategoryManager>();
 builder.Services.AddScoped<IArticleService,ArticleManager>();
 
 // Add services to the container.
-builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddJsonOptions(opt =>
+    opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())).AddJsonOptions(opt => 
+    opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 builder.Services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile));
 
 var app = builder.Build();
